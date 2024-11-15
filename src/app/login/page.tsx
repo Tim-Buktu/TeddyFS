@@ -13,22 +13,14 @@ export default function SignUp() {
 	const [agreed, setAgreed] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [error, setError] = useState("");
 
 	if (localStorage.getItem("token")) router.push("/pet-store");
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setError("");
-
-		if (password !== confirmPassword) {
-			setError("Passwords do not match");
-			return;
-		}
 
 		try {
-			const response = await fetch("http://localhost:3001/api/register", {
+			const response = await fetch("http://localhost:3001/api/login", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -39,15 +31,14 @@ export default function SignUp() {
 			if (response.ok) {
 				console.log("Signup successful");
 				const data = await response.json();
-				localStorage.setItem("token", data.token);
-				router.push("/pet-store");
+				localStorage.setItem("token", data.token); // Assuming the API returns a token
+				router.push("/pet-store"); // Redirect to dashboard after successful signup
 			} else {
-				const data = await response.json();
-				setError(data.message || "Signup failed");
+				// Handle error cases
+				console.error("Signup failed");
 			}
 		} catch (error) {
 			console.error("Error during signup:", error);
-			setError("An error occurred during signup");
 		}
 	};
 
@@ -74,24 +65,20 @@ export default function SignUp() {
 				<div className="w-full max-w-md space-y-8">
 					<div className="space-y-2 text-center lg:text-left">
 						<h2 className="text-3xl font-bold tracking-tight text-white lg:text-[#1a472a]">
-							Create Account
+							Login
 						</h2>
 						<p className="text-gray-200 lg:text-gray-600">
-							Already have an account?{" "}
+							Don't have an account?{" "}
 							<Link
-								href="/login"
+								href="/sign-up"
 								className="font-medium text-emerald-300 hover:text-emerald-400 lg:text-emerald-600 lg:hover:text-emerald-700"
 							>
-								Log in
+								Sign Up
 							</Link>
 						</p>
 					</div>
 
-					<form onSubmit={handleSubmit} className="space-y-6">
-						{error && (
-							<div className="text-red-500 text-sm text-center">{error}</div>
-						)}
-
+					<form onSubmit={handleSubmit}>
 						<div className="space-y-2">
 							<Label htmlFor="email" className="text-white lg:text-gray-700">
 								Email
@@ -117,26 +104,7 @@ export default function SignUp() {
 								type="password"
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
-								placeholder="Create a password"
-								required
-								className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 
-                         lg:bg-white lg:border-gray-200 lg:text-gray-900 lg:placeholder:text-gray-400"
-							/>
-						</div>
-
-						<div className="space-y-2">
-							<Label
-								htmlFor="confirmPassword"
-								className="text-white lg:text-gray-700"
-							>
-								Confirm Password
-							</Label>
-							<Input
-								id="confirmPassword"
-								type="password"
-								value={confirmPassword}
-								onChange={(e) => setConfirmPassword(e.target.value)}
-								placeholder="Confirm your password"
+								placeholder="Enter your password"
 								required
 								className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 
                          lg:bg-white lg:border-gray-200 lg:text-gray-900 lg:placeholder:text-gray-400"
